@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Colored Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        header {
+            background-color: #3498db;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            min-height: 70vh;
+        }
+
+        aside {
+            background-color: #e74c3c;
+            color: white;
+            width: 200px;
+            padding: 20px;
+        }
+
+        main {
+            flex: 1;
+            background-color: #2ecc71;
+            color: white;
+            padding: 20px;
+        }
+
+        section {
+            background-color: #f39c12;
+            color: white;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        footer {
+            background-color: #9b59b6;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Header Section</h1>
+        <p>This is the header with a blue background</p>
+    </header>
+
+    <div class="container">
+        <aside>
+            <h2>Sidebar</h2>
+            <p>This is the sidebar with a red background</p>
+            <ul>
+                <li>Menu Item 1</li>
+                <li>Menu Item 2</li>
+                <li>Menu Item 3</li>
+            </ul>
+        </aside>
+
+        <main>
+            <h2>Main Content Area</h2>
+            <p>This is the main content area with a green background</p>
+
+            <section>
+                <h3>Section Content</h3>
+                <p>This is a section within the main content with an orange background</p>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>Footer Section</p>
+        <p>This is the footer with a purple background</p>
+    </footer>
+</body>
+</html>
