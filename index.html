@@ -57,172 +57,193 @@
         }
     </style>
     <script>
-      (function () {
-        if (window.SSPAds?.__initialized) return;
+  (function () {
+    if (window.SSPAds?.__initialized) return;
 
-        const SSPAds = {
-          __initialized: true,
-          siteId: "cmlj0ew1k0009s6p5rd104na6",
-          apiBaseUrl: "https://api-ssp.awatize.com",
-          refreshTimers: {},
+    const SSPAds = {
+      __initialized: true,
+      siteId: "test-site-001",
+      apiBaseUrl: "https://three-coats-marry.loca.lt",
+      refreshTimers: {},
 
-          adUnits: [],
+      adUnits: [
+        {
+          "id": "header-banner-728x90",
+          "position": "header",
+          "size": "728x90",
+          "refreshInterval": 30
+        },
+        {
+          "id": "sidebar-banner-300x250",
+          "position": "sidebar",
+          "size": "300x250",
+          "refreshInterval": 30
+        }
+      ],
 
-          init() {
-            this.injectVastPlayer();
+      init() {
+        console.log('[SSP] Initializing...');
+        console.log('[SSP] Site ID:', this.siteId);
+        console.log('[SSP] API:', this.apiBaseUrl);
+        
+        this.injectVastPlayer();
 
-            this.adUnits.forEach((unit) => {
-              const containerId = `ssp-ad-${unit.id}`;
-              if (document.getElementById(containerId)) return;
+        this.adUnits.forEach((unit) => {
+          const containerId = `ssp-ad-${unit.id}`;
+          if (document.getElementById(containerId)) return;
 
-              const container = document.createElement("div");
-              container.id = containerId;
-              container.className = "ssp-ad-container";
+          const container = document.createElement("div");
+          container.id = containerId;
+          container.className = "ssp-ad-container";
 
-              const target = this.resolveTarget(unit.position);
-              if (!target) return;
+          const target = this.resolveTarget(unit.position);
+          if (!target) return;
 
-              unit.position === "footer"
-                ? target.appendChild(container)
-                : target.prepend(container);
+          unit.position === "footer"
+            ? target.appendChild(container)
+            : target.prepend(container);
 
-              this.loadAd(unit.id);
+          this.loadAd(unit.id);
 
-              if (unit.refreshInterval > 0) {
-                this.refreshTimers[unit.id] = setInterval(() => {
-                  if (document.visibilityState === "visible") {
-                    this.loadAd(unit.id);
-                  }
-                }, unit.refreshInterval * 1000);
+          if (unit.refreshInterval > 0) {
+            this.refreshTimers[unit.id] = setInterval(() => {
+              if (document.visibilityState === "visible") {
+                console.log('[SSP] Auto-refreshing:', unit.id);
+                this.loadAd(unit.id);
               }
-            });
-          },
+            }, unit.refreshInterval * 1000);
+          }
+        });
+      },
 
-          resolveTarget(position) {
-            if (position === "header")
-              return document.querySelector("header") || document.body;
-            if (position === "footer")
-              return document.querySelector("footer") || document.body;
-            if (position === "sidebar")
-              return (
-                document.querySelector("aside") ||
-                document.querySelector(".sidebar") ||
-                document.body
-              );
-            return document.body;
-          },
+      resolveTarget(position) {
+        if (position === "header")
+          return document.querySelector("header") || document.body;
+        if (position === "footer")
+          return document.querySelector("footer") || document.body;
+        if (position === "sidebar")
+          return (
+            document.querySelector("aside") ||
+            document.querySelector(".sidebar") ||
+            document.body
+          );
+        return document.body;
+      },
 
-          injectVastPlayer() {
-            if (document.getElementById("ssp-vast-player")) return;
+      injectVastPlayer() {
+        if (document.getElementById("ssp-vast-player")) return;
 
-            const script = document.createElement("script");
-            script.id = "ssp-vast-player";
-            script.src = `${this.apiBaseUrl}/vast-player.js`;
-            script.async = true;
-            document.head.appendChild(script);
-          },
+        const script = document.createElement("script");
+        script.id = "ssp-vast-player";
+        script.src = `${this.apiBaseUrl}/vast-player.js`;
+        script.async = true;
+        document.head.appendChild(script);
+      },
 
-          async loadAd(adUnitId) {
-            const container = document.getElementById(
-              `ssp-ad-${adUnitId}`,
-            );
-            if (!container) return;
+      async loadAd(adUnitId) {
+        const container = document.getElementById(`ssp-ad-${adUnitId}`);
+        if (!container) return;
 
-            const controller = new AbortController();
-            setTimeout(() => controller.abort(), 3000);
+        const controller = new AbortController();
+        setTimeout(() => controller.abort(), 3000);
 
-            try {
-              const response = await fetch(
-                `${this.apiBaseUrl}/api/ads/serve?siteId=${this.siteId}&adUnitId=${adUnitId}`,
-                { signal: controller.signal },
-              );
+        try {
+          console.log('[SSP] Loading ad for:', adUnitId);
+          const response = await fetch(
+            `${this.apiBaseUrl}/api/ads/serve?siteId=${this.siteId}&adUnitId=${adUnitId}`,
+            { signal: controller.signal }
+          );
 
-              if (!response.ok) throw new Error(response.statusText);
+          if (!response.ok) throw new Error(response.statusText);
 
-              const { ad } = await response.json();
-              if (!ad) return this.renderFallback(container);
+          const { ad } = await response.json();
+          if (!ad) return this.renderFallback(container);
 
-              // Track impression
-              this.trackImpression(ad.id, adUnitId, ad);
+          console.log('[SSP] Ad loaded:', ad.id);
 
-              // RTB Ad
-              if (ad.adMarkup) {
-                const iframe = document.createElement("iframe");
-                iframe.sandbox = "allow-scripts allow-popups allow-forms";
-                iframe.style.cssText = "border:0;width:100%";
-                iframe.srcdoc = ad.adMarkup;
+          // Track impression
+          this.trackImpression(ad.id, adUnitId, ad);
 
-                container.innerHTML = "";
-                container.appendChild(iframe);
-                return;
-              }
+          // RTB Ad
+          if (ad.adMarkup) {
+            const iframe = document.createElement("iframe");
+            iframe.sandbox = "allow-scripts allow-popups allow-forms";
+            iframe.style.cssText = "border:0;width:100%";
+            iframe.srcdoc = ad.adMarkup;
 
-              // Direct Ad
-              container.innerHTML = `
-                <a href="${ad.clickUrl || "#"}" target="_blank" rel="noopener noreferrer">
-                  <div style="padding:10px;border:1px solid #eee;border-radius:4px">
-                    ${ad.title ? `<h3>${ad.title}</h3>` : ""}
-                    ${ad.description ? `<p>${ad.description}</p>` : ""}
-                    ${ad.imageUrl ? `<img src="${ad.imageUrl}" style="max-width:100%" />` : ""}
-                  </div>
-                </a>
-              `;
-            } catch (err) {
-              console.warn("SSP ad error:", err);
-              this.renderFallback(container);
-            }
-          },
+            container.innerHTML = "";
+            container.appendChild(iframe);
+            return;
+          }
 
-          renderFallback(container) {
-            container.innerHTML =
-              '<div style="min-height:50px;background:#f5f5f5;border:1px dashed #ddd"></div>';
-          },
+          // Direct Ad
+          container.innerHTML = `
+            <a href="${ad.clickUrl || "#"}" target="_blank" rel="noopener noreferrer">
+              <div style="padding:10px;border:1px solid #eee;border-radius:4px;background:white">
+                ${ad.title ? `<h3 style="margin:0 0 5px;font-size:16px">${ad.title}</h3>` : ""}
+                ${ad.description ? `<p style="margin:0;font-size:14px">${ad.description}</p>` : ""}
+                ${ad.imageUrl ? `<img src="${ad.imageUrl}" style="max-width:100%;margin-top:5px" />` : ""}
+              </div>
+            </a>
+          `;
+        } catch (err) {
+          console.warn('[SSP] Ad error:', err.message);
+          this.renderFallback(container);
+        }
+      },
 
-          trackImpression(adId, adUnitId, ad) {
-            const impressionData = {
-              adId: adId,
-              siteId: this.siteId,
-              adUnitId: adUnitId,
-              timestamp: new Date().toISOString(),
-              userAgent: navigator.userAgent,
-              referrer: document.referrer || window.location.href,
-              source: ad?.source || 'direct'
-            };
+      renderFallback(container) {
+        container.innerHTML =
+          '<div style="min-height:50px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#999">Ad Space</div>';
+      },
 
-            // Include RTB metadata if available
-            if (ad?.tracking) {
-              impressionData.auctionId = ad.tracking.auctionId;
-              impressionData.bidId = ad.tracking.bidId;
-              impressionData.dspId = ad.tracking.dspId;
-              impressionData.cost = ad.tracking.cost;
-            }
-
-            fetch(`${this.apiBaseUrl}/api/analytics/impression`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(impressionData),
-            })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  console.log('[SSP] Impression tracked:', data.impressionId);
-                }
-              })
-              .catch(err => {
-                console.warn('[SSP] Impression tracking error:', err);
-              });
-          },
+      trackImpression(adId, adUnitId, ad) {
+        const impressionData = {
+          adId: adId,
+          siteId: this.siteId,
+          adUnitId: adUnitId,
+          timestamp: new Date().toISOString(),
+          userAgent: navigator.userAgent,
+          referrer: document.referrer || window.location.href,
+          source: ad?.source || 'direct'
         };
 
-        window.SSPAds = SSPAds;
+        // Include RTB metadata if available
+        if (ad?.tracking) {
+          impressionData.auctionId = ad.tracking.auctionId;
+          impressionData.bidId = ad.tracking.bidId;
+          impressionData.dspId = ad.tracking.dspId;
+          impressionData.cost = ad.tracking.cost;
+        }
 
-        document.readyState === "loading"
-          ? document.addEventListener("DOMContentLoaded", () => SSPAds.init())
-          : SSPAds.init();
-      })();
-    </script>
+        console.log('[SSP] Tracking impression:', impressionData);
+
+        fetch(`${this.apiBaseUrl}/api/analytics/impression`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(impressionData),
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              console.log('[SSP] ✅ Impression tracked:', data.impressionId);
+            } else {
+              console.warn('[SSP] ⚠️ Tracking failed:', data);
+            }
+          })
+          .catch(err => {
+            console.error('[SSP] ❌ Tracking error:', err);
+          });
+      },
+    };
+
+    window.SSPAds = SSPAds;
+
+    document.readyState === "loading"
+      ? document.addEventListener("DOMContentLoaded", () => SSPAds.init())
+      : SSPAds.init();
+  })();
+</script>
 </head>
 <body>
     <header>
