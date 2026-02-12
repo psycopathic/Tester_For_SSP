@@ -1,183 +1,183 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Simple Colored Layout</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
 
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+      }
 
-        header {
-            background-color: #3498db;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+      header {
+        background-color: #3498db;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
 
-        .container {
-            display: flex;
-            min-height: 70vh;
-        }
+      .container {
+        display: flex;
+        min-height: 70vh;
+      }
 
-        aside {
-            background-color: #e74c3c;
-            color: white;
-            width: 200px;
-            padding: 20px;
-        }
+      aside {
+        background-color: #e74c3c;
+        color: white;
+        width: 200px;
+        padding: 20px;
+      }
 
-        main {
-            flex: 1;
-            background-color: #2ecc71;
-            color: white;
-            padding: 20px;
-        }
+      main {
+        flex: 1;
+        background-color: #2ecc71;
+        color: white;
+        padding: 20px;
+      }
 
-        section {
-            background-color: #f39c12;
-            color: white;
-            padding: 20px;
-            margin-top: 20px;
-        }
+      section {
+        background-color: #f39c12;
+        color: white;
+        padding: 20px;
+        margin-top: 20px;
+      }
 
-        footer {
-            background-color: #9b59b6;
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
+      footer {
+        background-color: #9b59b6;
+        color: white;
+        padding: 20px;
+        text-align: center;
+      }
     </style>
     <script>
-  (function () {
-    if (window.SSPAds?.__initialized) return;
+      (function () {
+        if (window.SSPAds?.__initialized) return;
 
-    const SSPAds = {
-      __initialized: true,
-      siteId: "test-site-001",
-      apiBaseUrl: "https://three-coats-marry.loca.lt",
-      refreshTimers: {},
+        const SSPAds = {
+          __initialized: true,
+          siteId: "test-site-001",
+          apiBaseUrl: "https://unplagued-stella-dichotomically.ngrok-free.dev",
+          refreshTimers: {},
 
-      adUnits: [
-        {
-          "id": "header-banner-728x90",
-          "position": "header",
-          "size": "728x90",
-          "refreshInterval": 30
-        },
-        {
-          "id": "sidebar-banner-300x250",
-          "position": "sidebar",
-          "size": "300x250",
-          "refreshInterval": 30
-        }
-      ],
+          adUnits: [
+            {
+              id: "header-banner-728x90",
+              position: "header",
+              size: "728x90",
+              refreshInterval: 30,
+            },
+            {
+              id: "sidebar-banner-300x250",
+              position: "sidebar",
+              size: "300x250",
+              refreshInterval: 30,
+            },
+          ],
 
-      init() {
-        console.log('[SSP] Initializing...');
-        console.log('[SSP] Site ID:', this.siteId);
-        console.log('[SSP] API:', this.apiBaseUrl);
-        
-        this.injectVastPlayer();
+          init() {
+            console.log("[SSP] Initializing...");
+            console.log("[SSP] Site ID:", this.siteId);
+            console.log("[SSP] API:", this.apiBaseUrl);
 
-        this.adUnits.forEach((unit) => {
-          const containerId = `ssp-ad-${unit.id}`;
-          if (document.getElementById(containerId)) return;
+            this.injectVastPlayer();
 
-          const container = document.createElement("div");
-          container.id = containerId;
-          container.className = "ssp-ad-container";
+            this.adUnits.forEach((unit) => {
+              const containerId = `ssp-ad-${unit.id}`;
+              if (document.getElementById(containerId)) return;
 
-          const target = this.resolveTarget(unit.position);
-          if (!target) return;
+              const container = document.createElement("div");
+              container.id = containerId;
+              container.className = "ssp-ad-container";
 
-          unit.position === "footer"
-            ? target.appendChild(container)
-            : target.prepend(container);
+              const target = this.resolveTarget(unit.position);
+              if (!target) return;
 
-          this.loadAd(unit.id);
+              unit.position === "footer"
+                ? target.appendChild(container)
+                : target.prepend(container);
 
-          if (unit.refreshInterval > 0) {
-            this.refreshTimers[unit.id] = setInterval(() => {
-              if (document.visibilityState === "visible") {
-                console.log('[SSP] Auto-refreshing:', unit.id);
-                this.loadAd(unit.id);
+              this.loadAd(unit.id);
+
+              if (unit.refreshInterval > 0) {
+                this.refreshTimers[unit.id] = setInterval(() => {
+                  if (document.visibilityState === "visible") {
+                    console.log("[SSP] Auto-refreshing:", unit.id);
+                    this.loadAd(unit.id);
+                  }
+                }, unit.refreshInterval * 1000);
               }
-            }, unit.refreshInterval * 1000);
-          }
-        });
-      },
+            });
+          },
 
-      resolveTarget(position) {
-        if (position === "header")
-          return document.querySelector("header") || document.body;
-        if (position === "footer")
-          return document.querySelector("footer") || document.body;
-        if (position === "sidebar")
-          return (
-            document.querySelector("aside") ||
-            document.querySelector(".sidebar") ||
-            document.body
-          );
-        return document.body;
-      },
+          resolveTarget(position) {
+            if (position === "header")
+              return document.querySelector("header") || document.body;
+            if (position === "footer")
+              return document.querySelector("footer") || document.body;
+            if (position === "sidebar")
+              return (
+                document.querySelector("aside") ||
+                document.querySelector(".sidebar") ||
+                document.body
+              );
+            return document.body;
+          },
 
-      injectVastPlayer() {
-        if (document.getElementById("ssp-vast-player")) return;
+          injectVastPlayer() {
+            if (document.getElementById("ssp-vast-player")) return;
 
-        const script = document.createElement("script");
-        script.id = "ssp-vast-player";
-        script.src = `${this.apiBaseUrl}/vast-player.js`;
-        script.async = true;
-        document.head.appendChild(script);
-      },
+            const script = document.createElement("script");
+            script.id = "ssp-vast-player";
+            script.src = `${this.apiBaseUrl}/vast-player.js`;
+            script.async = true;
+            document.head.appendChild(script);
+          },
 
-      async loadAd(adUnitId) {
-        const container = document.getElementById(`ssp-ad-${adUnitId}`);
-        if (!container) return;
+          async loadAd(adUnitId) {
+            const container = document.getElementById(`ssp-ad-${adUnitId}`);
+            if (!container) return;
 
-        const controller = new AbortController();
-        setTimeout(() => controller.abort(), 3000);
+            const controller = new AbortController();
+            setTimeout(() => controller.abort(), 3000);
 
-        try {
-          console.log('[SSP] Loading ad for:', adUnitId);
-          const response = await fetch(
-            `${this.apiBaseUrl}/api/ads/serve?siteId=${this.siteId}&adUnitId=${adUnitId}`,
-            { signal: controller.signal }
-          );
+            try {
+              console.log("[SSP] Loading ad for:", adUnitId);
+              const response = await fetch(
+                `${this.apiBaseUrl}/api/ads/serve?siteId=${this.siteId}&adUnitId=${adUnitId}`,
+                { signal: controller.signal },
+              );
 
-          if (!response.ok) throw new Error(response.statusText);
+              if (!response.ok) throw new Error(response.statusText);
 
-          const { ad } = await response.json();
-          if (!ad) return this.renderFallback(container);
+              const { ad } = await response.json();
+              if (!ad) return this.renderFallback(container);
 
-          console.log('[SSP] Ad loaded:', ad.id);
+              console.log("[SSP] Ad loaded:", ad.id);
 
-          // Track impression
-          this.trackImpression(ad.id, adUnitId, ad);
+              // Track impression
+              this.trackImpression(ad.id, adUnitId, ad);
 
-          // RTB Ad
-          if (ad.adMarkup) {
-            const iframe = document.createElement("iframe");
-            iframe.sandbox = "allow-scripts allow-popups allow-forms";
-            iframe.style.cssText = "border:0;width:100%";
-            iframe.srcdoc = ad.adMarkup;
+              // RTB Ad
+              if (ad.adMarkup) {
+                const iframe = document.createElement("iframe");
+                iframe.sandbox = "allow-scripts allow-popups allow-forms";
+                iframe.style.cssText = "border:0;width:100%";
+                iframe.srcdoc = ad.adMarkup;
 
-            container.innerHTML = "";
-            container.appendChild(iframe);
-            return;
-          }
+                container.innerHTML = "";
+                container.appendChild(iframe);
+                return;
+              }
 
-          // Direct Ad
-          container.innerHTML = `
+              // Direct Ad
+              container.innerHTML = `
             <a href="${ad.clickUrl || "#"}" target="_blank" rel="noopener noreferrer">
               <div style="padding:10px;border:1px solid #eee;border-radius:4px;background:white">
                 ${ad.title ? `<h3 style="margin:0 0 5px;font-size:16px">${ad.title}</h3>` : ""}
@@ -186,96 +186,101 @@
               </div>
             </a>
           `;
-        } catch (err) {
-          console.warn('[SSP] Ad error:', err.message);
-          this.renderFallback(container);
-        }
-      },
+            } catch (err) {
+              console.warn("[SSP] Ad error:", err.message);
+              this.renderFallback(container);
+            }
+          },
 
-      renderFallback(container) {
-        container.innerHTML =
-          '<div style="min-height:50px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#999">Ad Space</div>';
-      },
+          renderFallback(container) {
+            container.innerHTML =
+              '<div style="min-height:50px;background:#f5f5f5;border:1px dashed #ddd;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#999">Ad Space</div>';
+          },
 
-      trackImpression(adId, adUnitId, ad) {
-        const impressionData = {
-          adId: adId,
-          siteId: this.siteId,
-          adUnitId: adUnitId,
-          timestamp: new Date().toISOString(),
-          userAgent: navigator.userAgent,
-          referrer: document.referrer || window.location.href,
-          source: ad?.source || 'direct'
+          trackImpression(adId, adUnitId, ad) {
+            const impressionData = {
+              adId: adId,
+              siteId: this.siteId,
+              adUnitId: adUnitId,
+              timestamp: new Date().toISOString(),
+              userAgent: navigator.userAgent,
+              referrer: document.referrer || window.location.href,
+              source: ad?.source || "direct",
+            };
+
+            // Include RTB metadata if available
+            if (ad?.tracking) {
+              impressionData.auctionId = ad.tracking.auctionId;
+              impressionData.bidId = ad.tracking.bidId;
+              impressionData.dspId = ad.tracking.dspId;
+              impressionData.cost = ad.tracking.cost;
+            }
+
+            console.log("[SSP] Tracking impression:", impressionData);
+
+            fetch(`${this.apiBaseUrl}/api/analytics/impression`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(impressionData),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.success) {
+                  console.log(
+                    "[SSP] ✅ Impression tracked:",
+                    data.impressionId,
+                  );
+                } else {
+                  console.warn("[SSP] ⚠️ Tracking failed:", data);
+                }
+              })
+              .catch((err) => {
+                console.error("[SSP] ❌ Tracking error:", err);
+              });
+          },
         };
 
-        // Include RTB metadata if available
-        if (ad?.tracking) {
-          impressionData.auctionId = ad.tracking.auctionId;
-          impressionData.bidId = ad.tracking.bidId;
-          impressionData.dspId = ad.tracking.dspId;
-          impressionData.cost = ad.tracking.cost;
-        }
+        window.SSPAds = SSPAds;
 
-        console.log('[SSP] Tracking impression:', impressionData);
-
-        fetch(`${this.apiBaseUrl}/api/analytics/impression`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(impressionData),
-        })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              console.log('[SSP] ✅ Impression tracked:', data.impressionId);
-            } else {
-              console.warn('[SSP] ⚠️ Tracking failed:', data);
-            }
-          })
-          .catch(err => {
-            console.error('[SSP] ❌ Tracking error:', err);
-          });
-      },
-    };
-
-    window.SSPAds = SSPAds;
-
-    document.readyState === "loading"
-      ? document.addEventListener("DOMContentLoaded", () => SSPAds.init())
-      : SSPAds.init();
-  })();
-</script>
-</head>
-<body>
+        document.readyState === "loading"
+          ? document.addEventListener("DOMContentLoaded", () => SSPAds.init())
+          : SSPAds.init();
+      })();
+    </script>
+  </head>
+  <body>
     <header>
-        <h1>Header Section</h1>
-        <p>This is the header with a blue background</p>
+      <h1>Header Section</h1>
+      <p>This is the header with a blue background</p>
     </header>
 
     <div class="container">
-        <aside>
-            <h2>Sidebar</h2>
-            <p>This is the sidebar with a red background</p>
-            <ul>
-                <li>Menu Item 1</li>
-                <li>Menu Item 2</li>
-                <li>Menu Item 3</li>
-            </ul>
-        </aside>
+      <aside>
+        <h2>Sidebar</h2>
+        <p>This is the sidebar with a red background</p>
+        <ul>
+          <li>Menu Item 1</li>
+          <li>Menu Item 2</li>
+          <li>Menu Item 3</li>
+        </ul>
+      </aside>
 
-        <main>
-            <h2>Main Content Area</h2>
-            <p>This is the main content area with a green background</p>
+      <main>
+        <h2>Main Content Area</h2>
+        <p>This is the main content area with a green background</p>
 
-            <section>
-                <h3>Section Content</h3>
-                <p>This is a section within the main content with an orange background</p>
-            </section>
-        </main>
+        <section>
+          <h3>Section Content</h3>
+          <p>
+            This is a section within the main content with an orange background
+          </p>
+        </section>
+      </main>
     </div>
 
     <footer>
-        <p>Footer Section</p>
-        <p>This is the footer with a purple background</p>
+      <p>Footer Section</p>
+      <p>This is the footer with a purple background</p>
     </footer>
-</body>
+  </body>
 </html>
